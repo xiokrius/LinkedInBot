@@ -9,6 +9,9 @@ import org.testng.annotations.BeforeClass;
 
 import java.time.Duration;
 import org.testng.annotations.Test;
+import org.testng.annotations.AfterClass;
+import org.openqa.selenium.chrome.ChromeOptions;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 
 import org.openqa.selenium.JavascriptExecutor;
@@ -59,10 +62,10 @@ public class LinkedSimilarFriendsAdditionBotTest {
         addCont.addMeFriend();
         // addCont.loca();
     }
-    // @AfterClass
-    // public void teardown() {
-    // driver.quit();
-    // }
+    @AfterClass
+    public void teardown() {
+    driver.quit();
+    }
 
 }
 
