@@ -34,6 +34,7 @@ public class LinkedSimilarFriendsAdditionBotTest {
             options.addArguments("--headless=new");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
+            options.addArguments("--disable-gpu");
         }
 
         WebDriverManager.chromedriver().setup();
