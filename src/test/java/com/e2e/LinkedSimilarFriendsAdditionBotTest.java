@@ -23,13 +23,27 @@ public class LinkedSimilarFriendsAdditionBotTest {
 
     @BeforeClass
     public void setup() {
-        driver = new ChromeDriver();
+
+        ChromeOptions options = new ChromeOptions();
+
+           if (!System.getProperty("os.name").toLowerCase().contains("win")) {
+            // для Linux (Docker, CI/CD)
+            options.addArguments("--headless=new");
+            options.addArguments("--no-sandbox");
+            options.addArguments("--disable-dev-shm-usage");
+        }
+
+        WebDriverManager.chromedriver().setup();
+
+        driver = new ChromeDriver(options);
+
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         js = (JavascriptExecutor) driver;
+        
         driver.manage().window().maximize();
         driver.get(url);
+        
     }
-
     @Test(priority = 1)
     public void login() {
         login ligAp = new login(driver);
