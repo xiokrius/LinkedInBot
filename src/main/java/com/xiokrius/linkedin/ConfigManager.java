@@ -8,7 +8,7 @@ public class ConfigManager {
     private static Properties properties = new Properties();
 
     static {
-        loadProperties("config.properties");
+        loadProperties("conifg.properties");
 
     }
 

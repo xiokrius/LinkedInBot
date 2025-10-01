@@ -6,12 +6,10 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 
-
 public class login extends BasePage {
 
-
-    private String login = ConfigManager.getProperty("loginInLink");
-    private String pass = ConfigManager.getProperty("passInLink");
+    private String login = ConfigManager.getProperty("loginInLink2");
+    private String pass = ConfigManager.getProperty("passInLink2");
 
     public login(WebDriver driver) {
         super(driver);
@@ -39,4 +37,3 @@ public class login extends BasePage {
     }
 
 }
-

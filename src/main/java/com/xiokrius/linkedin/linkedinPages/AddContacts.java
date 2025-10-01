@@ -10,7 +10,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.util.List;
 
-
 public class AddContacts extends BasePage {
 
     private static final Logger logger = LogManager.getLogger(AddContacts.class);

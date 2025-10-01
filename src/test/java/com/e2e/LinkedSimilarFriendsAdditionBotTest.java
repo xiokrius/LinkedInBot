@@ -13,7 +13,6 @@ import org.testng.annotations.AfterClass;
 import org.openqa.selenium.chrome.ChromeOptions;
 import io.github.bonigarcia.wdm.WebDriverManager;
 
-
 import org.openqa.selenium.JavascriptExecutor;
 
 public class LinkedSimilarFriendsAdditionBotTest {
@@ -61,7 +60,7 @@ public class LinkedSimilarFriendsAdditionBotTest {
         addContactsNevad addCont = new addContactsNevad(driver);
         addCont.goToPageContacts();
         addCont.addMeFriend();
-        // addCont.loca();
+
     }
     @AfterClass
     public void teardown() {
@@ -69,4 +68,3 @@ public class LinkedSimilarFriendsAdditionBotTest {
     }
 
 }
-

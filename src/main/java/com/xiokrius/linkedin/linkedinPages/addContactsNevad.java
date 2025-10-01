@@ -1,15 +1,17 @@
 package com.xiokrius.linkedin.linkedinPages;
 
+import java.time.Duration;
 import java.util.List;
 
 import com.xiokrius.linkedin.Environment.BasePage;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
+import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class addContactsNevad extends BasePage {
 
@@ -32,54 +34,72 @@ public class addContactsNevad extends BasePage {
     public void addMeFriend() {
         createWait(20);
 
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(20));
+
+        // Основной контейнер с кнопками
+        WebElement activeContainer = wait.until(ExpectedConditions.presenceOfElementLocated(
+                By.xpath("//div[@data-sdui-screen='com.linkedin.sdui.flagshipnav.mynetwork.CohortSeeAll']")));
+
+        // Локатор кнопки "Установить контакт"
+        By connectButtons = By.xpath("//span[normalize-space()='Установить контакт']/ancestor::button[1]");
+
         while (true) {
-            By connectButtons = By.xpath("//span[normalize-space()='Установить контакт']/ancestor::button[1]");
-            List<WebElement> elements = getDriver().findElements(connectButtons);
+            // Ищем все доступные кнопки
+            List<WebElement> elements = activeContainer.findElements(connectButtons);
             logger.info("Найдено кнопок: " + elements.size());
 
             if (elements.isEmpty()) {
-                // Если кнопок нет, скроллим в конец страницы
-                getJS().executeScript("window.scrollTo(0, document.body.scrollHeight);");
+                getJS().executeScript("arguments[0].scrollTop = arguments[0].scrollHeight;", activeContainer);
                 try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                }
-                // Проверяем заново
-                elements = getDriver().findElements(connectButtons);
-                if (elements.isEmpty()) {
-                    logger.info("Больше кнопок нет на странице");
+                    Thread.sleep(1500);
+                } catch (InterruptedException ignored) {
                 }
 
-            } else {
-                // Скроллим к последней кнопке, чтобы подгрузились новые
-                WebElement last = elements.get(elements.size() - 1);
-                getJS().executeScript("arguments[0].scrollIntoView({block:'center'});", last);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
+                // После скролла проверяем ещё раз
+                elements = activeContainer.findElements(connectButtons);
+                if (elements.isEmpty()) {
+                    logger.info("Больше кнопок нет на странице, выходим.");
+                    break; // завершаем цикл
                 }
             }
 
-            for (WebElement el : elements) {
+            // кликаем по первой
+            while (!elements.isEmpty()) {
                 try {
+                    WebElement el = activeContainer.findElements(connectButtons).get(0);
+
                     logger.info("HTML: " + el.getAttribute("outerHTML"));
                     getJS().executeScript("arguments[0].scrollIntoView({block:'center'});", el);
+                    Thread.sleep(300);
 
-                    // Рандомная задержка перед кликом
-                    Thread.sleep(500);
-
-                    getWait().until(ExpectedConditions.elementToBeClickable(el)).click();
+                    wait.until(ExpectedConditions.elementToBeClickable(el)).click();
                     logger.info("Кликнул по кнопке");
+                } catch (StaleElementReferenceException e) {
+                    logger.warn("Элемент устарел, пробую снова...");
                 } catch (Exception e) {
-                    logger.warn("Обычный клик не сработал, кликаю через JS: " + e.getMessage());
-                    getJS().executeScript("arguments[0].click();", el);
+                    logger.warn("Обычный клик не сработал, пробую через JS: " + e.getMessage());
+                    try {
+                        WebElement el = activeContainer.findElements(connectButtons).get(0);
+                        getJS().executeScript("arguments[0].click();", el);
+                    } catch (Exception ex) {
+                        logger.warn("JS-клик тоже не сработал: " + ex.getMessage());
+                    }
                 }
 
                 try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-
+                    Thread.sleep(500); // задержка
+                } catch (InterruptedException ignored) {
                 }
+
+                // Обновляем список кнопок после клика
+                elements = activeContainer.findElements(connectButtons);
+            }
+
+            // скроллим вниз для загрузки новых
+            getJS().executeScript("arguments[0].scrollTop = arguments[0].scrollHeight;", activeContainer);
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ignored) {
             }
         }
     }
